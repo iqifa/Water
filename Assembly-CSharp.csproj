@@ -46,20 +46,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Grass\Scripts\GenerateNoise.cs" />
-    <Compile Include="Assets\Water\Scripts\StylizedWater.cs" />
     <Compile Include="Assets\Grass\Scripts\GrassCSControler.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
-    <Compile Include="Assets\Water\Scripts\GerstnerWater.cs" />
     <Compile Include="Assets\Water\Scripts\SineWater.cs" />
-    <Compile Include="Assets\Water\Scripts\WaterPlanarReflection.cs" />
     <Compile Include="Assets\Grass\Scripts\GrassBlade.cs" />
     <Compile Include="Assets\Grass\Scripts\GrassMesh.cs" />
     <None Include="Assets\Grass\Shader\GrassBlade.shader" />
+    <None Include="Assets\Water\Shader\GerstnerWater.shader" />
     <None Include="Assets\Water\Shader\SineWaterURP.shader" />
     <None Include="Assets\Grass\Shader\GrassInteraction.shader" />
-    <None Include="Assets\Water\Shader\StylizedWaterURP.shader" />
     <None Include="Assets\Grass\Shader\GrassCS.compute" />
-    <None Include="Assets\Water\Shader\GerstnerWaterURP.shader" />
     <None Include="Assets\Grass\Shader\Besier.hlsl" />
     <Reference Include="UnityEngine">
       <HintPath>D:\Software\Unity\2022.3.62f2\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

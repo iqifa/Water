@@ -1,0 +1,11 @@
+Library/
+Logs/
+Temp/
+UserSettings/
+obj/
+.idea/
+Assets/TutorialInfo.meta
+Assets/TutorialInfo/
+Assets/Readme.asset
+Assets/Readme.asset.meta
+*.sln
