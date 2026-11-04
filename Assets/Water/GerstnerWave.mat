@@ -82,7 +82,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AbsorptionDepth: 16.3
-    - _AbsorptionScale: 0.8
+    - _AbsorptionScale: 8.3
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -103,10 +103,11 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PhaseG: 0.05
+    - _PhaseG: 0.35
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _RefractionStrength: 0.013
+    - _RefractionFadeDepth: 0.7
+    - _RefractionStrength: 0.039
     - _ScatterDensity: 0.35
     - _ScatterDepth: 8
     - _ScatteringScale: 0.05
@@ -115,6 +116,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _SunGlowIntensity: 5
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
@@ -128,8 +130,8 @@ Material:
     - _ScatterColor: {r: 0.1764418, g: 0.5754717, b: 0.2276123, a: 1}
     - _ShallowScatterColor: {r: 0.9245283, g: 0.10902455, b: 0.10902455, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _WaterAbsorptionColor: {r: 0, g: 0.94, b: 0.97, a: 1}
-    - _WaterScatteringColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WaterAbsorptionColor: {r: 0.1, g: 0.75, b: 0.65, a: 1}
+    - _WaterScatteringColor: {r: 0.123, g: 0.14999998, b: 0.34999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &5152413687326374041
 MonoBehaviour:
