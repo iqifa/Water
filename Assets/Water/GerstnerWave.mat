@@ -82,7 +82,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AbsorptionDepth: 16.3
-    - _AbsorptionScale: 8.3
+    - _AbsorptionScale: 20.4
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0

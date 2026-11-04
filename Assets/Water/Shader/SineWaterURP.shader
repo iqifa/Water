@@ -46,11 +46,15 @@ Shader "Custom/SineWaterURP"
         _TipThreshold ("Tip Min Height (生成起始高度)", Float) = 0.5
         _TipSpread ("Tip Spread (过渡范围/宽度)", Float) = 0.2
 
-        // 关键新增：水下与折射参数
-        _ShallowColor ("Shallow Color (浅水)", Color) = (0.3, 0.7, 0.8, 1)
-        _DeepColor ("Deep Color (深水)", Color) = (0.05, 0.15, 0.35, 1)
-        _DepthDensity ("Depth Density (水深吸光率)", Range(0.01, 2.0)) = 0.3
+        // 关键新增：水下与折射参数 (与 GerstnerWater 统一走 WaterVolumeLighting.hlsl)
+        _WaterAbsorptionColor ("Water Absorption (Shallow Color)", Color) = (0.15, 0.88, 0.78, 1.0)
+        _AbsorptionScale ("Clarity Depth Scale (m)", Range(0.5, 50.0)) = 8.0
+        _WaterScatteringColor ("Water Scattering (Deep Color)", Color) = (0.04, 0.42, 0.68, 1.0)
+        _ScatteringScale ("Scattering Brightness", Range(0.0, 3.0)) = 1.2
+        _PhaseG ("Sun Forward Scatter (PhaseG)", Range(0.0, 0.9)) = 0.45
+        _SunGlowIntensity ("Sun Glow Intensity", Range(0.0, 5.0)) = 1.5
         _RefractionStrength ("Refraction Strength (折射强度)", Range(0, 0.2)) = 0.02
+        _RefractionFadeDepth ("Refraction Fade Depth (m)", Range(0.01, 2.0)) = 0.5
     }
 
     SubShader
@@ -88,6 +92,7 @@ Shader "Custom/SineWaterURP"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
+            #include "Assets/Water/Shader/WaterVolumeLighting.hlsl"
 
             struct Attributes
             {
@@ -145,11 +150,15 @@ Shader "Custom/SineWaterURP"
                 float _TipThreshold;
                 float _TipSpread;
 
-                // Underwater & Refraction
-                float4 _ShallowColor;
-                float4 _DeepColor;
-                float _DepthDensity;
+                // Underwater & Refraction (与 GerstnerWater 统一)
+                float4 _WaterAbsorptionColor;
+                float _AbsorptionScale;
+                float4 _WaterScatteringColor;
+                float _ScatteringScale;
+                float _PhaseG;
+                float _SunGlowIntensity;
                 float _RefractionStrength;
+                float _RefractionFadeDepth;
             CBUFFER_END
 
             float3 VertexFBM(float3 worldPos)
@@ -295,41 +304,30 @@ Shader "Custom/SineWaterURP"
                     normal = normalize(float3(-normalOffset.x, 1.0, -normalOffset.z));
                 }
 
-                // 2. 屏幕深度与 UV 处理
+                // 2. 折射采样与体积渲染 (统一走 WaterVolumeLighting.hlsl)
                 float2 screenUV = input.screenPos.xy / input.screenPos.w;
                 float surfaceDepth = input.screenPos.w;
 
-                // 使用水平分量 normal.xz 扰动屏幕 UV
-                float2 refractOffset = normal.xz * _RefractionStrength;
-                float2 refractUV = screenUV + refractOffset;
+                float2 refractUV;
+                float viewDepth, verticalDepth;
+                WaterSampleRefraction(screenUV, surfaceDepth, input.positionWS,
+                    normal, _RefractionStrength, _RefractionFadeDepth,
+                    refractUV, viewDepth, verticalDepth);
 
-                // 采样水下深度
-                float rawSceneDepth = SampleSceneDepth(refractUV);
-                float sceneDepth = LinearEyeDepth(rawSceneDepth, _ZBufferParams);
-
-                // 防穿帮：偏移后采样到了水面上方物体时回退
-                if (sceneDepth < surfaceDepth)
-                {
-                    refractUV = screenUV;
-                    rawSceneDepth = SampleSceneDepth(refractUV);
-                    sceneDepth = LinearEyeDepth(rawSceneDepth, _ZBufferParams);
-                }
-
-                // 计算视线水深厚度
-                float depthDiff = max(0.0, sceneDepth - surfaceDepth);
-
-                // 3. 水下颜色采样与吸收
                 half3 sceneColor = SampleSceneColor(refractUV);
-                float fade = saturate(1.0 - exp(-depthDiff * _DepthDensity));
 
-                // 水体颜色随深度衰减过渡
-                half3 waterBodyColor = lerp(_ShallowColor.rgb, _DeepColor.rgb, fade);
-                half3 underwaterFinal = lerp(sceneColor, waterBodyColor, fade);
-
-                // 4. 光照计算 (Fresnel & Specular)
+                // 3. 双程消光 + 内散射 (与 GerstnerWater 同一套模型)
                 Light mainLight = GetMainLight();
                 float3 lightDir = mainLight.direction;
                 float3 viewDir = normalize(input.viewDirWS);
+
+                half3 underwaterFinal = WaterVolumeShading(
+                    sceneColor,
+                    viewDepth, verticalDepth,
+                    normal, viewDir, mainLight,
+                    _WaterAbsorptionColor.rgb, _AbsorptionScale,
+                    _WaterScatteringColor.rgb, _ScatteringScale,
+                    _PhaseG, _SunGlowIntensity);
 
                 // 菲涅尔效应 (垂直看透明，平视看反光)
                 float NdotV = saturate(dot(viewDir, normal));
