@@ -47,17 +47,11 @@ GFVaryings GFVertex(GFAttributes v) {
     UNITY_SETUP_INSTANCE_ID(v); UNITY_TRANSFER_INSTANCE_ID(v,o); UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
     VertexPositionInputs p=GetVertexPositionInputs(v.positionOS.xyz);
     VertexNormalInputs n=GetVertexNormalInputs(v.normalOS,v.tangentOS);
-    o.positionCS=p.positionCS;
-    o.positionWS=p.positionWS;
-    o.normalWS=n.normalWS;
+    o.positionCS=p.positionCS; o.positionWS=p.positionWS; o.normalWS=n.normalWS;
     o.tangentWS=float4(n.tangentWS,v.tangentOS.w*GetOddNegativeScale());
-    o.uv=v.uv; 
-    o.uv2=v.uv2; 
-    o.shadowCoord=GetShadowCoord(p); 
-    o.fog=ComputeFogFactor(p.positionCS.z);
+    o.uv=v.uv; o.uv2=v.uv2; o.shadowCoord=GetShadowCoord(p); o.fog=ComputeFogFactor(p.positionCS.z);
     #if defined(GF_TRANSPARENT)
-    o.normalWS=normalize(n.normalWS);
-    o.tangentWS.xyz=normalize(n.tangentWS);
+    o.normalWS=normalize(n.normalWS);o.tangentWS.xyz=normalize(n.tangentWS);
     o.frameBitangentWS=cross(o.normalWS,o.tangentWS.xyz)*o.tangentWS.w;
     o.frameViewWS=GetCameraPositionWS()-p.positionWS;
     o.frameStateWeight=(1-_GFFrameStateEnable<.01)?1-((sin(_Time.y*5)+1)*.35+.2):0;

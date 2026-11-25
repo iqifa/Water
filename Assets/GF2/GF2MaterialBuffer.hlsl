@@ -134,4 +134,9 @@ float _WetFlowSpeed;
 float _WetFlowStrength;
 float _WetTraceStrength;
 float _WriteMask;
+float _GFTransparentMRT;
+float4 _GFFrameShadowBias;
+float4 _GFFrameStateColor;
+float _GFFrameStateEnable;
+float _GFUseCapturedFrame;
 CBUFFER_END

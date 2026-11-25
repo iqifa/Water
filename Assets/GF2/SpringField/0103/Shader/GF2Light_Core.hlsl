@@ -11,8 +11,6 @@ float3 GFArtisticLighting(float3 normal,float3 bitangent,float3 halfangle,float 
     
     
     float a=roughness*roughness;
-    float ax=max(a)
-    
     
     
 }

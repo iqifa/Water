@@ -30,7 +30,7 @@ Shader "GF2/GF2UberShader"
             Name "GF_Forward_Lit_MRT"
             Tags
             {
-                "LightMode" = "GF2ForwardMRT"
+                "LightMode" = "UniversalForward"
             }
 
 
@@ -185,6 +185,7 @@ Shader "GF2/GF2UberShader"
 
                 if (_AnisotropicSpecular > 0.5)
                 {
+                    
                 }
 
 
@@ -216,10 +217,10 @@ Shader "GF2/GF2UberShader"
                 {
                     float peak = PBR_D(1, roughness) * PBR_V(vh, lh, roughness);
                     spec = SAMPLE_TEXTURE2D_LOD(_RampMapTex, sampler_RampMapTex,
-                                                                   float2(saturate(D*V/max(peak,1e-8)),0.375),
-                                                                   0).rgb * peak * fresnel;
+                                                float2(saturate(D*V/max(peak,1e-8)),0.375),
+                                                0).rgb * peak * fresnel;
                     diffuse_stren = SAMPLE_TEXTURE2D_LOD(_RampMapTex, sampler_RampMapTex,
-          float2(nl,0.125), 0).rgb;
+                   float2(nl,0.125), 0).rgb;
                 }
                 float3 PBR_Color = (diffuse + f0 * clamp(spec, 0, 10)) * diffuse_stren * mainLight.color * mainLight.
                     distanceAttenuation;
